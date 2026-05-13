@@ -48,6 +48,7 @@ FROM customers AS cust
 JOIN orders AS o
 ON cust.id = o.customer_id
 WHERE cust.last_name = "Lee") 
+
 SELECT id, order_date FROM orders
 WHERE order_date > (SELECT first_order_Lee FROM f);
 
