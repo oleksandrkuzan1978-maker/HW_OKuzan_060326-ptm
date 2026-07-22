@@ -1,0 +1,86 @@
+/* 1. Тестовая коллекция в mongo atlas  sample_mflix.theaters
+Найти все кинотеатры в Калифорнии ("CA") и посчитать их количество */
+
+result = client['sample_mflix']['theaters'].aggregate([
+    {
+        '$match': {
+            'location.address.state': 'CA'
+        }
+    }, {
+        '$count': 'count of theaters in CA'
+    }
+])
+
+/* 2. Тестовая коллекция в mongo atlas  sample_airbnb.listingsAndReviews
+Найти недвижимость с самым большим количеством спален (bedrooms) и напишите ее название */
+
+result = client['sample_airbnb']['listingsAndReviews'].aggregate([
+    {
+        '$sort': {
+            'bedrooms': -1
+        }
+    }, {
+        '$limit': 1
+    }, {
+        '$project': {
+            'name': 1
+        }
+    }
+])
+
+/* 3. Тестовая коллекция в mongo atlas  sample_airbnb.listingsAndReviews
+Найти недвижимость с самым высоким рейтингом  review_scores_rating при минимальном количестве отзывов 50 (number_of_reviews) и напишите ее название */
+
+# Вариант 1
+
+result = client['sample_airbnb']['listingsAndReviews'].aggregate([
+    {
+        '$match': {
+            'number_of_reviews': {
+                '$gte': 50
+            }
+        }
+    }, {
+        '$sort': {
+            'review_scores.review_scores_rating': -1
+        }
+    }, {
+        '$limit': 1
+    }, {
+        '$project': {
+            '_id': 0, 
+            'name': 1, 
+            'review_scores.review_scores_rating': 1
+        }
+    }
+])
+
+
+
+
+# Вариант 2
+
+result = client['sample_airbnb']['listingsAndReviews'].aggregate([
+    {
+        '$match': {
+            'number_of_reviews': {
+                '$gte': 50
+            }
+        }
+    }, {
+        '$sort': {
+            'review_scores.review_scores_rating': -1
+        }
+    }, {
+        '$limit': 1
+    }, {
+        '$project': {
+            '_id': 0, 
+            'name': {
+                '$substrBytes': [
+                    '$name', 0, 31
+                ]
+            }
+        }
+    }
+])
