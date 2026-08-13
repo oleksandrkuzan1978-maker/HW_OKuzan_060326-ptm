@@ -1,0 +1,57 @@
+Pаботаем с коллекцией ich.sample_data.restaurants
+
+/* 1. Найти рестораны на borough 'Staten Island' 
+в названии которых есть слово pizza
+(Pizza и PIZZA тоже считаются) */
+
+
+result = client['sample_data']['restaurants'].aggregate([
+    {
+        '$match': {
+            'borough': 'Staten Island', 
+            'name': {
+                '$regex': 'pizza', 
+                '$options': 'i'
+            }
+        }
+    }, {
+        '$count': 'string'
+    }
+])
+
+
+/* 2. Выведите названия 5 лучших по среднему значению отзывов ( $avg: "$grades.score") */
+
+
+result = client['sample_data']['restaurants'].aggregate([
+    {
+        '$unwind': '$grades'
+    }, {
+        '$group': {
+            '_id': '$name', 
+            'avgScore': {
+                '$avg': '$grades.score'
+            }
+        }
+    }, {
+        '$set': {
+            'avgScore': {
+                '$round': [
+                    '$avgScore', 2
+                ]
+            }
+        }
+    }, {
+        '$sort': {
+            'avgScore': -1   
+        }
+    }, {
+        '$limit': 5
+    }, {
+        '$project': {
+            '_id': 0, 
+            'name': '$_id', 
+            'avgScore': 1
+        }
+    }
+])
