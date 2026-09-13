@@ -105,8 +105,11 @@ with Session() as session:
     for category in categories:
         print(f'Категория: {category.name}')
 
-        for product in category.products:
-            print(f'\t{product.name} — {product.price}')
+        if category.products:
+            for product in category.products:
+                print(f'\t{product.name} — {product.price}')
+        else:
+            print("\tВ данной категории товаров не обнаружено")
 
 
     # Задача 3 Обновление данных
@@ -126,7 +129,7 @@ with Session() as session:
     # Используя агрегирующие функции и группировку,
     # подсчитайте общее количество продуктов в каждой категории.
     query = select(Category.name, func.count(Product.id)
-                    ).join(Product, Category.id == Product.category_id
+                    ).outerjoin(Product, Category.id == Product.category_id
                            ).group_by(Category.id, Category.name).order_by(Category.id)
 
     prod_by_cat = session.execute(query)
