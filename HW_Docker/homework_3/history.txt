@@ -1,0 +1,4 @@
+
+docker build -t memory-info .
+
+MSYS_NO_PATHCONV=1 docker run --name memory-info-container -v "$(pwd)/data1:/app/data" memory-info
