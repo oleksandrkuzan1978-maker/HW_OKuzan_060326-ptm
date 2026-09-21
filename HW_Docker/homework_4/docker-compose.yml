@@ -1,0 +1,30 @@
+services:
+  web:
+    image: nginx:latest
+    ports:
+      - "8080:80"
+    networks:
+      - mynetwork
+
+  redis:
+    image: redis:latest
+    networks:
+      - mynetwork
+
+  db:
+    image: mysql:8.0
+    env_file:
+      - mysql.env
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - mynetwork
+      
+networks:
+  mynetwork:
+volumes:
+  mysql_data:
+
+
+
+
